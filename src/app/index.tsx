@@ -1,98 +1,153 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { getMovies } from '@/api/movies';
+import MovieCard, { Movie } from '@/components/MovieCard';
 
 export default function HomeScreen() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  // Câu 5a: 
+  const [isTile, setIsTile] = useState(false);
+  // Câu 5b:
+  const layout = isTile ? 'tile' : 'row';
+  const numColumns = isTile ? 2 : 1;
+  // Câu 6a: 
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Câu 2:
+  useEffect(() => {
+    getMovies()
+      .then(setMovies)
+      .catch((e) => setError(e instanceof Error ? e.message : 'Đã có lỗi xảy ra'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Câu 6b:
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      setMovies(await getMovies());
+      setError(null);
+    } catch (e) {
+      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể làm mới danh sách');
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  // Câu 3c:
+  const handleSelect = useCallback(
+    (id: string) => {
+      const movie = movies.find((m) => m.id === id);
+      if (movie) {
+        Alert.alert('Phim đã chọn', movie.title);
+      }
+    },
+    [movies],
+  );
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    // Câu 1b:
+    <SafeAreaView style={styles.container}>
+      {/* Câu 1c:*/}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Movie App</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {/* Câu 5a:*/}
+        <View style={styles.switchRow}>
+          <Text style={styles.switchLabel}>Dạng lưới</Text>
+          <Switch value={isTile} onValueChange={setIsTile} />
+        </View>
+      </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+      <View style={styles.content}>
+        {loading ? (
+          // Câu 2c: 
+          <ActivityIndicator size="large" style={styles.loading} />
+        ) : error ? (
+          <Text style={styles.error}>{error}</Text>
+        ) : (
+          // Câu 2: 
+          <FlatList
+            data={movies}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            key={String(numColumns)}
+            numColumns={numColumns}
+            columnWrapperStyle={isTile ? styles.column : undefined}
+            // Câu 6a:
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            renderItem={({ item }) =>
+              isTile ? (
+                <View style={styles.tileItem}>
+                  <MovieCard movie={item} layout={layout} onSelect={handleSelect} />
+                </View>
+              ) : (
+                <MovieCard movie={item} layout={layout} onSelect={handleSelect} />
+              )
+            }
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: '#fff',
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
+  header: {
+    paddingVertical: 16,
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ccc',
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  content: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
-  title: {
+  loading: {
+    flex: 1,
+  },
+  error: {
+    padding: 16,
+    color: '#d00',
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  list: {
+    padding: 16,
+    gap: 12,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  switchLabel: {
+    fontSize: 15,
+  },
+  column: {
+    justifyContent: 'space-between',
+  },
+  tileItem: {
+    width: '48%',
   },
 });
