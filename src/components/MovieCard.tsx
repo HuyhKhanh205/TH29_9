@@ -66,66 +66,27 @@ function MovieCard({ movie, layout = 'row', onSelect }: MovieCardProps) {
 export default React.memo(MovieCard);
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#f2f2f7',
-    gap: 12,
-  },
-  cardRow: {
-    flexDirection: 'row',
-  },
-  cardTile: {
-    flex: 1,
-  },
+  card: { padding: 10,
+     backgroundColor: '#eee',
+      gap: 10 },
+  cardRow: { flexDirection: 'row' },
+  cardTile: { flex: 1 },
   // Câu 4a:
-  posterRow: {
-    width: 70,
-    height: 100,
-    borderRadius: 8,
-    backgroundColor: '#d1d1d6',
-  },
-  posterTitle: {
-    width: '100%',
-    aspectRatio: 2 / 3,
-    borderRadius: 8,
-    backgroundColor: '#d1d1d6',
-  },
-  info: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 2,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111',
-  },
-  meta: {
-    fontSize: 14,
-    color: '#666',
-  },
-  rating: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#e0a800',
-  },
+  posterRow: { width: 70,
+     height: 100 },
   // Câu 4b:
-  posterWrap: {
-    width: '100%',
-  },
-  // Câu 4b:
-  ratingBadge: {
-    position: 'absolute',
-    top: 6,
-    left: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    overflow: 'hidden',
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-    backgroundColor: "gray"
-  },
+  posterTitle: { width: '100%',
+   aspectRatio: 2 / 3 },
+  posterWrap: { width: '100%' },
+  ratingBadge: { position: 'absolute',
+  top: 5,
+  left: 5,
+  padding: 3,
+  color: 'white',
+  backgroundColor: 'gray' },
+  info: { flex: 1 },
+  title: { fontSize: 16,
+  fontWeight: 'bold' },
+  meta: { color: 'gray' },
+  rating: { color: 'orange' },
 });

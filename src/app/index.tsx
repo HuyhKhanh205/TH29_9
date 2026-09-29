@@ -106,48 +106,21 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-  },
-  loading: {
-    flex: 1,
-  },
-  error: {
-    padding: 16,
-    color: '#d00',
-    textAlign: 'center',
-  },
-  list: {
-    padding: 16,
-    gap: 12,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  switchLabel: {
-    fontSize: 15,
-  },
-  column: {
-    justifyContent: 'space-between',
-  },
-  tileItem: {
-    width: '48%',
-  },
+  container: { flex: 1,
+     backgroundColor: 'white' },
+  header: { padding: 10,
+     alignItems: 'center' },
+  headerTitle: { fontSize: 20,
+     fontWeight: 'bold' },
+  switchRow: { flexDirection: 'row',
+   alignItems: 'center' },
+  switchLabel: { marginRight: 8 },
+  content: { flex: 1 },
+  loading: { flex: 1 },
+  error: { padding: 10,
+     color: 'red' },
+  list: { padding: 10,
+     gap: 10 },
+  column: { justifyContent: 'space-between' },
+  tileItem: { width: '48%' },
 });
